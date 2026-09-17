@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import Foundation
-@_spi(GoogleCloudInternal) import class GoogleCloudWKT._ProtoJSONDecoder
+@_spi(GoogleCloudInternal) import class GoogleWKT._ProtoJSONDecoder
 import struct AsyncHTTPClient.HTTPClientResponse
 import struct NIOHTTP1.HTTPHeaders
 import enum NIOHTTP1.HTTPResponseStatus
@@ -87,7 +87,7 @@ import struct NIOCore.ByteBuffer
     .mapValues { values in values.map { $0.value } }
     .mapValues { values in values.joined(separator: ";") }
     return .http(
-      GoogleCloudGax.HTTPDetails(
+      GoogleGax.HTTPDetails(
         httpStatusCode: Int(response.status.code),
         headers: headers,
         payload: data,

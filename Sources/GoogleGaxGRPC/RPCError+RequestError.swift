@@ -15,9 +15,9 @@
 import Foundation
 import GRPCCore
 import GRPCProtobuf
-import GoogleCloudGax
-import GoogleCloudWKT
-import GoogleCloudWKTConvert
+import GoogleGax
+import GoogleWKT
+import GoogleWKTConvert
 import GoogleRpc
 import SwiftProtobuf
 
@@ -122,10 +122,10 @@ extension StatusDetail {
       var item = GoogleRpc.RetryInfo()
       let seconds = retryInfo.delay.components.seconds
       let nanos = Int64(retryInfo.delay.components.attoseconds / 1_000_000_000)
-      item.retryDelay = try? GoogleCloudWKT.Duration(seconds: seconds, nanos: nanos)
+      item.retryDelay = try? GoogleWKT.Duration(seconds: seconds, nanos: nanos)
       self = .retryInfo(item)
     } else if let protoAny = detail.any {
-      if let wktAny = try? GoogleCloudWKT.Any(proto: protoAny) {
+      if let wktAny = try? GoogleWKT.Any(proto: protoAny) {
         self = .other(wktAny)
       } else {
         self = .other(fallbackAny(typeUrl: protoAny.typeURL))
@@ -136,20 +136,20 @@ extension StatusDetail {
   }
 }
 
-private func fallbackAny(typeUrl: String = "") -> GoogleCloudWKT.`Any` {
+private func fallbackAny(typeUrl: String = "") -> GoogleWKT.`Any` {
   let json = "{\"@type\":\"\(typeUrl)\"}".data(using: .utf8) ?? Data()
-  if let any = try? JSONDecoder().decode(GoogleCloudWKT.`Any`.self, from: json) {
+  if let any = try? JSONDecoder().decode(GoogleWKT.`Any`.self, from: json) {
     return any
   }
   do {
-    return try GoogleCloudWKT.`Any`(fromMessage: GoogleCloudWKT.Empty())
+    return try GoogleWKT.`Any`(fromMessage: GoogleWKT.Empty())
   } catch {
-    fatalError("Failed to construct fallback GoogleCloudWKT.Any: \(error)")
+    fatalError("Failed to construct fallback GoogleWKT.Any: \(error)")
   }
 }
 
 extension RPCError {
-  /// Converts an `RPCError` to a `GoogleCloudGax.RequestError`.
+  /// Converts an `RPCError` to a `GoogleGax.RequestError`.
   func toRequestError() -> RequestError {
     if self.cause != nil {
       return .io(self)
